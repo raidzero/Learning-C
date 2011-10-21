@@ -76,25 +76,6 @@ int copyFile(FILE *fp, FILE *tp) {
 	return 0;
 }
 
-int printFile(FILE *source) {
-	char ch;
-	//open file
-	if ((source = fopen(source, "rb")==0)) {
-		printf("File %f failed to open file.");
-		return 1;
-	}
-	
-	while(!feof(source)) { //while not at the end of the file
-		ch=fgetc(source);  //get each character
-		if (ferror(source)) { //if there is a file error
-			printf("Error reading file.\n");
-			return 1;
-		}
-		if (!feof(source)) printf(ch);
-	}
-	return 0;	
-}
-
 int main() {
 	char *charv = "This is a test string.";
 	//strlen is from string.h - it returns the length of a char or char*
@@ -117,9 +98,6 @@ int main() {
 	copyFile(FILENAME,"file2");
 	
 	if (!copyFile(FILENAME,"file2")) printf("file copied!\n"); //if the result of copyFile() is not 1
-	
-	//if (printFile("file2")) printf("Unable to print contents of %s", FILENAME);
-	printFile("file2");
 		
 	return 0;
 }

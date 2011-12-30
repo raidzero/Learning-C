@@ -1,0 +1,2 @@
+/dev/sda1		/boot		ext2		noauto,noatime	1 2
+/dev/sda3		/		ext3		noatime		0 1

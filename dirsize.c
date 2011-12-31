@@ -10,6 +10,7 @@ long dirsize(const char* directory, int verbose)
 {
   struct dirent *de;
   struct stat s;
+  char pathname[PATH_MAX];
   DIR * dir; 
   //long total_items = 0;
   long filesize = 0;
@@ -23,15 +24,15 @@ long dirsize(const char* directory, int verbose)
   
   while ((de = readdir (dir)) != NULL)
   {
-    stat(de->d_name, &s);
-	if (S_ISLNK(s.st_mode)) 
-	{
-	  printf("links are ignored.\n");
-	}
 	if (de->d_type == DT_REG)
 	{
 	  filesize = 0; //be sure to reset this each time to avoid inaccuracy
-	  stat(de->d_name, &s); // get file info into our s structure
+	  sprintf(pathname, "%s/%s", directory, de->d_name);
+	  if (stat(pathname, &s))
+	  {
+		printf("Error in stat!\n");
+		return -1;
+	  }
 	  if (verbose) 
 	  {
 	    printf("%s/%s : %ld bytes (%f MB)\n", directory, de->d_name, s.st_size, (float) s.st_size / 1024 / 1024);
@@ -41,7 +42,6 @@ long dirsize(const char* directory, int verbose)
 	}
 	if (de->d_type == DT_DIR && strcmp(de->d_name, ".") != 0 && strcmp(de->d_name, "..") != 0)
 	{
-	  char pathname[PATH_MAX];
 	  sprintf(pathname, "%s/%s", directory, de->d_name);
 	  dirsize(pathname, verbose); //recursion: keep looping until no more subdirs remain
 	}
@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
 	return -1;
   }
 
-  int verbose = 1; //show or hide individual computations
+  int verbose = 0; //show or hide individual computations
 
   long space = compute_size(argv[1], verbose);
   if (space != -1)
